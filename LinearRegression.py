@@ -15,6 +15,8 @@ import numpy as np
 import plotly as py
 import matplotlib.pyplot as plt
 
+from Exceptions import *
+
 class LinearRegression(object):
     """ 
     Contains methods to load data, normalize data, plot data and predict outputs
@@ -40,3 +42,17 @@ class LinearRegression(object):
         self.X = X
         self.y = y
         return (X, y)
+
+    def plot(self):
+        """
+        Plots the loaded data
+        Throws DataHandlingException if more than one x-label
+        Throws NoDataException if data is not loaded
+        """
+        if not hasattr(self, 'X'):
+            raise NoDataException()
+        elif self.X.shape[1] > 1:
+            raise DataHandlingException()
+        else:
+            plt.plot(self.X[0:, 0], self.y[0:,0], 'rx')
+            plt.show()
