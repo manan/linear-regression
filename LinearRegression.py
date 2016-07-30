@@ -19,3 +19,24 @@ class LinearRegression(object):
     """ 
     Contains methods to load data, normalize data, plot data and predict outputs
     """
+
+    def load_data(self, *files):
+        """
+        Returns X and y labels as vectors/matrices.
+
+        If two files are given, the first one is assumed
+        to be X and the second one assumed Y.
+        If one file is given, the last column is assumed
+        to be Y and the columns before are assumed X.
+        """
+        if len(files) == 1:
+            dataXY = np.genfromtxt(files[0], delimiter = ',')
+            pos = dataXY.shape[1]
+            y = dataXY[0:, pos - 1: pos]
+            X = dataXY[0:, 0:pos - 1]
+        else:
+            X = np.genfromtxt(files[0], delimiter = ',')
+            y = np.genfromtxt(files[1], delimiter = ',')
+        self.X = X
+        self.y = y
+        return (X, y)
