@@ -141,4 +141,13 @@ class LinearRegression(object):
             pred = self.theta.T * x.T
             return pred[0,0]
         else:
-            return 0 # stub (Normalization is not working as fast 
+            return 0 # stub (Normalization is not working as fast)
+        pass
+
+    def can_plot(self):
+        if not hasattr(self, 'X'):
+            return False
+        elif self.X.shape[1] > 2:
+            return False
+        else:
+            return True
