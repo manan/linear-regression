@@ -85,3 +85,17 @@ class LinearRegression(object):
                     self.X[:, i] = tempX
             return self.X
         pass
+
+    def compute_cost(self):
+        """
+        Cost Function of the Linear Regression algorithm.
+        Returns (1/2m) * [summation] (H(x)-y)^2
+        Halved average of summed squared error
+        """
+        m = self.X.shape[0]
+        preds = self.X * self.theta
+        errors = preds - self.y
+        sq_errors = np.square(errors)
+        summation = np.sum(sq_errors)
+        J = ((1.0/(2*m))*summation)
+        return J
