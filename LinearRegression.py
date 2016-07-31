@@ -32,17 +32,16 @@ class LinearRegression(object):
         to be Y and the columns before are assumed X.
         """
         if len(files) == 1:
-            dataXY = np.genfromtxt(files[0], delimiter = ',')
+            dataXY = np.matrix(np.genfromtxt(files[0], delimiter = ','))
             pos = dataXY.shape[1]
-            y = dataXY[0:, pos - 1: pos]
-            X = dataXY[0:, 0:pos - 1]
+            y = dataXY[:, pos -1]
+            X = dataXY[:, :pos - 1]
         else:
-            X = np.genfromtxt(files[0], delimiter = ',')
-            y = np.genfromtxt(files[1], delimiter = ',')
+            X = np.matrix(np.genfromtxt(files[0], delimiter = ','))
+            y = np.matrix(np.genfromtxt(files[1], delimiter = ','))
         self.X = X
         self.y = y
-        theta = np.zeros(shape = (1, self.X.shape[1]))
-        self.theta = theta
+        self.theta = np.matrix(np.zeros(shape = (X.shape[1], 1)))
         return (X, y)
 
     def plot(self):
@@ -56,7 +55,7 @@ class LinearRegression(object):
         elif self.X.shape[1] > 1:
             raise DataHandlingException()
         else:
-            plt.plot(self.X[0:, 0], self.y[0:,0], 'rx')
+            plt.plot(self.X, self.y, 'rx')
             plt.show()
 
     def normalize(self):
@@ -71,15 +70,15 @@ class LinearRegression(object):
         if not hasattr(self, 'X'):
             raise NoDataException()
         else:
-            self.X_mean = np.zeros(shape=(1,self.X.shape[1]))
-            self.X_range = np.zeros(shape=(1,self.X.shape[1]))
+            self.X_mean = np.matrix(np.zeros(shape=(1,self.X.shape[1])))
+            self.X_range = np.matrix(np.zeros(shape=(1,self.X.shape[1])))
             for i in range(self.X.shape[1]):
-                tempX = self.X[0:, i:i+1]
+                tempX = self.X[:, i]
                 meanX = np.mean(tempX)
                 self.X_mean[0,i] = meanX
                 rangeX = max(tempX) - min(tempX)
                 self.X_range[0,i] = rangeX
                 tempX = (tempX - meanX)/rangeX
-                self.X[0:, i:i+1] = tempX
+                self.X[:, i] = tempX
             return self.X
         pass
