@@ -51,7 +51,7 @@ class LinearRegression(object):
 
     def plot(self):
         """
-        Plots the loaded data
+        Plots the loaded data and the prediction line
         Throws DataHandlingException if more than one x-label
         Throws NoDataException if data is not loaded
         """
@@ -60,7 +60,11 @@ class LinearRegression(object):
         elif self.X.shape[1] > 2:
             raise DataHandlingException()
         else:
-            plt.plot(self.X[:,1], self.y, 'rx')
+            if not self.gd:
+                self.gradient_descent()
+            X = self.X[:,1]
+            y = self.X * self.theta
+            plt.plot(self.X[:,1], self.y, 'rx', X, y, 'g-')
             plt.show()
 
     def normalize(self):
