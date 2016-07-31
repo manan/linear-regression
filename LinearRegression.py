@@ -41,6 +41,8 @@ class LinearRegression(object):
             y = np.genfromtxt(files[1], delimiter = ',')
         self.X = X
         self.y = y
+        theta = np.zeros(shape = (1, self.X.shape[1]))
+        self.theta = theta
         return (X, y)
 
     def plot(self):
@@ -80,3 +82,4 @@ class LinearRegression(object):
                 tempX = (tempX - meanX)/rangeX
                 self.X[0:, i:i+1] = tempX
             return self.X
+        pass
