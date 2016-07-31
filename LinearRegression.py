@@ -11,6 +11,7 @@ __author__ = 'Manan Mehta'
 __email__ = 'mehtamanan@icloud.com'
 __version__ = '1.0.0'
 
+import sys
 import numpy as np
 import plotly as py
 import matplotlib.pyplot as plt
@@ -21,6 +22,10 @@ class LinearRegression(object):
     """ 
     Contains methods to load data, normalize data, plot data and predict outputs
     """
+
+    def __init__(self):
+        self.norm = False #Data has not been normalized
+        self.gd = False #Gradient descent has not been carried out
 
     def load_data(self, *files):
         """
@@ -43,7 +48,6 @@ class LinearRegression(object):
         self.X = np.hstack((ones, X))
         self.y = y
         self.theta = np.matrix(np.zeros(shape = (self.X.shape[1], 1)))
-        return (X, y)
 
     def plot(self):
         """
@@ -69,21 +73,23 @@ class LinearRegression(object):
 
         Throws NoDataException is data is not loaded
         """
-        if not hasattr(self, 'X'):
-            raise NoDataException()
-        else:
-            self.X_mean = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
-            self.X_range = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
-            for i in range(self.X.shape[1]):
-                if not i == 0:
-                    tempX = self.X[:, i]
-                    meanX = np.mean(tempX)
-                    self.X_mean[0, i - 1] = meanX
-                    rangeX = max(tempX) - min(tempX)
-                    self.X_range[0, i - 1] = rangeX
-                    tempX = (tempX - meanX)/rangeX
-                    self.X[:, i] = tempX
-            return self.X
+        if not self.norm:
+            self.norm = True
+            if not hasattr(self, 'X'):
+                raise NoDataException()
+            else:
+                self.X_mean = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
+                self.X_range = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
+                for i in range(self.X.shape[1]):
+                    if not i == 0:
+                        tempX = self.X[:, i]
+                        meanX = np.mean(tempX)
+                        self.X_mean[0, i - 1] = meanX
+                        rangeX = max(tempX) - min(tempX)
+                        self.X_range[0, i - 1] = rangeX
+                        tempX = (tempX - meanX)/rangeX
+                        self.X[:, i] = tempX
+            pass
         pass
 
     def compute_cost(self):
@@ -99,3 +105,36 @@ class LinearRegression(object):
         summation = np.sum(sq_errors)
         J = ((1.0/(2*m))*summation)
         return J
+
+    def gradient_descent(self):
+        """
+        Carries out gradient descent to compute the
+        values of theta such that cost function is 
+        reduced (= error reduced)
+        """
+        if not self.gd:
+            self.gd = True
+            num_iters = 5000
+            alpha = 0.01
+            m = self.X.shape[0]
+            n = self.X.shape[1]
+            history = np.matrix(np.zeros(shape = (1, num_iters)))
+            for i in range(num_iters):
+                delta = np.matrix(np.zeros(shape = (n, 1)))
+                for j in range(m):
+                    Xi = self.X[j,:].T
+                    pred = self.theta.T * Xi
+                    error = pred - self.y[j,0]
+                    delta += (error[0,0] * Xi)
+                self.theta = self.theta - ((alpha/m)*delta)
+                history[0,i] = self.compute_cost()
+            self.history = history
+
+    def predict(self, x):
+        if not self.norm:
+            one = np.matrix('1')
+            x = np.hstack((one, x))
+            pred = self.theta.T * x.T
+            return pred[0,0]
+        else:
+            return 0 # stub (Normalization is not working as fast 
