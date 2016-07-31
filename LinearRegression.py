@@ -56,3 +56,27 @@ class LinearRegression(object):
         else:
             plt.plot(self.X[0:, 0], self.y[0:,0], 'rx')
             plt.show()
+
+    def normalize(self):
+        """
+        Normalizes the data such that the mean is 0
+        and the data fits -0.5<x<0.5 roughly and
+        returns the new X matrice
+        This makes gradient descent work faster
+
+        Throws NoDataException is data is not loaded
+        """
+        if not hasattr(self, 'X'):
+            raise NoDataException()
+        else:
+            self.X_mean = np.zeros(shape=(1,self.X.shape[1]))
+            self.X_range = np.zeros(shape=(1,self.X.shape[1]))
+            for i in range(self.X.shape[1]):
+                tempX = self.X[0:, i:i+1]
+                meanX = np.mean(tempX)
+                self.X_mean[0,i] = meanX
+                rangeX = max(tempX) - min(tempX)
+                self.X_range[0,i] = rangeX
+                tempX = (tempX - meanX)/rangeX
+                self.X[0:, i:i+1] = tempX
+            return self.X
