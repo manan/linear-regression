@@ -39,9 +39,10 @@ class LinearRegression(object):
         else:
             X = np.matrix(np.genfromtxt(files[0], delimiter = ','))
             y = np.matrix(np.genfromtxt(files[1], delimiter = ','))
-        self.X = X
+        ones = np.matrix(np.ones(shape = (X.shape[0], 1)))
+        self.X = np.hstack((ones, X))
         self.y = y
-        self.theta = np.matrix(np.zeros(shape = (X.shape[1], 1)))
+        self.theta = np.matrix(np.zeros(shape = (self.X.shape[1], 1)))
         return (X, y)
 
     def plot(self):
@@ -52,10 +53,10 @@ class LinearRegression(object):
         """
         if not hasattr(self, 'X'):
             raise NoDataException()
-        elif self.X.shape[1] > 1:
+        elif self.X.shape[1] > 2:
             raise DataHandlingException()
         else:
-            plt.plot(self.X, self.y, 'rx')
+            plt.plot(self.X[:,1], self.y, 'rx')
             plt.show()
 
     def normalize(self):
@@ -63,22 +64,24 @@ class LinearRegression(object):
         Normalizes the data such that the mean is 0
         and the data fits -0.5<x<0.5 roughly and
         returns the new X matrice
-        This makes gradient descent work faster
+        Stores the mean and range of all x features 
+        except the 1s added for vectorization
 
         Throws NoDataException is data is not loaded
         """
         if not hasattr(self, 'X'):
             raise NoDataException()
         else:
-            self.X_mean = np.matrix(np.zeros(shape=(1,self.X.shape[1])))
-            self.X_range = np.matrix(np.zeros(shape=(1,self.X.shape[1])))
+            self.X_mean = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
+            self.X_range = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
             for i in range(self.X.shape[1]):
-                tempX = self.X[:, i]
-                meanX = np.mean(tempX)
-                self.X_mean[0,i] = meanX
-                rangeX = max(tempX) - min(tempX)
-                self.X_range[0,i] = rangeX
-                tempX = (tempX - meanX)/rangeX
-                self.X[:, i] = tempX
+                if not i == 0:
+                    tempX = self.X[:, i]
+                    meanX = np.mean(tempX)
+                    self.X_mean[0, i - 1] = meanX
+                    rangeX = max(tempX) - min(tempX)
+                    self.X_range[0, i - 1] = rangeX
+                    tempX = (tempX - meanX)/rangeX
+                    self.X[:, i] = tempX
             return self.X
         pass
