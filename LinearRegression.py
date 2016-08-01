@@ -29,12 +29,10 @@ class LinearRegression(object):
 
     def load_data(self, *files):
         """
-        Returns X and y labels as vectors/matrices.
-
         If two files are given, the first one is assumed
-        to be X and the second one assumed Y.
+        to contain X values and the second one, Y.
         If one file is given, the last column is assumed
-        to be Y and the columns before are assumed X.
+        to contain Y values and the columns before, X.
         """
         if len(files) == 1:
             dataXY = np.matrix(np.genfromtxt(files[0], delimiter = ','))
@@ -72,8 +70,7 @@ class LinearRegression(object):
         """
         Normalizes the data such that the mean is 0
         and the data fits -0.5<x<0.5 roughly and
-        returns the new X matrice
-        Stores the mean and range of all x features 
+        stores the mean and range of all x features 
         except the 1s added for vectorization
 
         Throws NoDataException is data is not loaded
@@ -114,8 +111,8 @@ class LinearRegression(object):
     def gradient_descent(self):
         """
         Carries out gradient descent to compute the
-        values of theta such that cost function is 
-        reduced (= error reduced)
+        values of theta such that the cost function 
+        is reduced (= error reduced)
         """
         self.normalize()
         if not self.gd:
@@ -138,25 +135,18 @@ class LinearRegression(object):
 
     def predict(self, x):
         """ 
-        Consumes a npmatrix of shape (1xn) where n
+        Consumes an npmatrix of shape (1xn) where n
         is the number of features (x labels).
-        The function then returns the predicted y 
-        output based on extrapolation of your data
+        The function then predicts an output
+        based on consumed data.
         """
-        if not self.norm:
-            one = np.matrix('1')
-            x = np.hstack((one, x))
-            pred = self.theta.T * x.T
-            return pred[0,0]
-        else:
-            pred_x = np.matrix(np.zeros(shape = x.shape))
-            for i in range(x.shape[1]):
-                pred_x[0,i] = ((x[0, i] - self.X_mean[0,i])/(self.X_range[0,i]))
-            ones = np.matrix('1')
-            pred_x = np.hstack((ones, pred_x))
-            pred = self.theta.T * pred_x.T
-            return pred[0,0]
-        pass
+        pred_x = np.matrix(np.zeros(shape = x.shape))
+        for i in range(x.shape[1]):
+            pred_x[0,i] = ((x[0, i] - self.X_mean[0,i])/(self.X_range[0,i]))
+        ones = np.matrix('1')
+        pred_x = np.hstack((ones, pred_x))
+        pred = self.theta.T * pred_x.T
+        return pred[0,0]
 
     def can_plot(self):
         """
