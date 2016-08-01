@@ -117,9 +117,10 @@ class LinearRegression(object):
         values of theta such that cost function is 
         reduced (= error reduced)
         """
+        self.normalize()
         if not self.gd:
             self.gd = True
-            num_iters = 1500
+            num_iters = 7500
             alpha = 0.01
             m = self.X.shape[0]
             n = self.X.shape[1]
@@ -148,7 +149,13 @@ class LinearRegression(object):
             pred = self.theta.T * x.T
             return pred[0,0]
         else:
-            return 0 # stub (Normalization is not working as fast)
+            pred_x = np.matrix(np.zeros(shape = x.shape))
+            for i in range(x.shape[1]):
+                pred_x[0,i] = ((x[0, i] - self.X_mean[0,i])/(self.X_range[0,i]))
+            ones = np.matrix('1')
+            pred_x = np.hstack((ones, pred_x))
+            pred = self.theta.T * pred_x.T
+            return pred[0,0]
         pass
 
     def can_plot(self):
