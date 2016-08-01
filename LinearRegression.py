@@ -48,6 +48,9 @@ class LinearRegression(object):
         self.X = np.hstack((ones, X))
         self.y = y
         self.theta = np.matrix(np.zeros(shape = (self.X.shape[1], 1)))
+        self.norm = False
+        self.gd = False
+        self.gradient_descent()
 
     def plot(self):
         """
@@ -55,13 +58,11 @@ class LinearRegression(object):
         Throws DataHandlingException if more than one x-label
         Throws NoDataException if data is not loaded
         """
-        if not hasattr(self, 'X'):
+        if not hasattr(self, 'X'): # To raise an exception is data is not loaded
             raise NoDataException()
-        elif self.X.shape[1] > 2:
+        elif self.X.shape[1] > 2: # To raise an exception if there way to many exceptions
             raise DataHandlingException()
         else:
-            if not self.gd:
-                self.gradient_descent()
             X = self.X[:,1]
             y = self.X * self.theta
             plt.plot(self.X[:,1], self.y, 'rx', X, y, 'g-')
@@ -77,15 +78,15 @@ class LinearRegression(object):
 
         Throws NoDataException is data is not loaded
         """
-        if not self.norm:
+        if not self.norm: # Prevents from normalizing again
             self.norm = True
-            if not hasattr(self, 'X'):
+            if not hasattr(self, 'X'): # Raises exception if data not loaded
                 raise NoDataException()
             else:
                 self.X_mean = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
                 self.X_range = np.matrix(np.zeros(shape=(1,self.X.shape[1] - 1)))
                 for i in range(self.X.shape[1]):
-                    if not i == 0:
+                    if not i == 0: # Since 1st column contains the 1s for vectorization
                         tempX = self.X[:, i]
                         meanX = np.mean(tempX)
                         self.X_mean[0, i - 1] = meanX
@@ -118,7 +119,7 @@ class LinearRegression(object):
         """
         if not self.gd:
             self.gd = True
-            num_iters = 5000
+            num_iters = 1500
             alpha = 0.01
             m = self.X.shape[0]
             n = self.X.shape[1]
@@ -135,6 +136,12 @@ class LinearRegression(object):
             self.history = history
 
     def predict(self, x):
+        """ 
+        Consumes a npmatrix of shape (1xn) where n
+        is the number of features (x labels).
+        The function then returns the predicted y 
+        output based on extrapolation of your data
+        """
         if not self.norm:
             one = np.matrix('1')
             x = np.hstack((one, x))
@@ -145,6 +152,9 @@ class LinearRegression(object):
         pass
 
     def can_plot(self):
+        """
+        Returns whether the data can be plotted or not
+        """
         if not hasattr(self, 'X'):
             return False
         elif self.X.shape[1] > 2:
